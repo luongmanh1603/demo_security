@@ -23,15 +23,20 @@ public class SercurityConfiguration  {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(config->{
-            config.requestMatchers("/")
-                    .authenticated()
-                    .anyRequest()
-                    .permitAll();
+            config.requestMatchers("/").permitAll()
+                    .requestMatchers("/loginPage").permitAll()
+                    .requestMatchers("/dashboard/**").hasAnyRole("ADMIN","OPERATOR")
+
+                    .anyRequest().authenticated();
         }).formLogin(config->config
                 .loginPage("/loginPage")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/home", true)
+                .defaultSuccessUrl("/home")
                 .failureUrl("/loginPage?error=true")
+
+        ).logout(config->config
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/loginPage")
 
         );
 
